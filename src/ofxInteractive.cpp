@@ -1,8 +1,14 @@
 #include "ofxInteractive.h"
 
+ofEvent<InteractionEventArgs> ofxInteractive::clickedEvents;
+int ofxInteractive::maxId = 0;
+
 ofxInteractive::ofxInteractive()
 {
-    clicked = false;
+    bClicked = false;
+    bMouseOver = false;
+    id = maxId++;
+    cout << "id = " << id << endl;
 
     //enable events
     ofAddListener(ofEvents().mousePressed, this, &ofxInteractive::mousePressed);
@@ -11,6 +17,7 @@ ofxInteractive::ofxInteractive()
     ofAddListener(ofEvents().mouseReleased, this, &ofxInteractive::mouseReleased);
 }
 
+//--------------------------------------------------------------
 ofxInteractive::~ofxInteractive()
 {
     ofLogVerbose() << "ofxInteractive destructor called...";
@@ -21,15 +28,18 @@ ofxInteractive::~ofxInteractive()
     ofRemoveListener(ofEvents().mouseReleased, this, &ofxInteractive::mouseReleased);
 }
 
+//--------------------------------------------------------------
 ofxInteractive::ofxInteractive(const ofxInteractive &parent)
 {
     ofLogVerbose() << "ofxInteractive copy constructor called";
 
-    clicked = parent.clicked;
+    bClicked = parent.bClicked;
+    bMouseOver = parent.bClicked;
     x = parent.x;
     y = parent.y;
     width = parent.width;
     height = parent.height;
+    id = parent.id;
 
     //enable events
     ofAddListener(ofEvents().mousePressed, this, &ofxInteractive::mousePressed);
@@ -38,28 +48,49 @@ ofxInteractive::ofxInteractive(const ofxInteractive &parent)
     ofAddListener(ofEvents().mouseReleased, this, &ofxInteractive::mouseReleased);
 }
 
+//--------------------------------------------------------------
 void ofxInteractive::mouseMoved(ofMouseEventArgs &args) {
-    int x = args.x;
-    int y = args.y;
-    int button = args.button;
+
+    if(inside(args.x, args.y)) {
+        bMouseOver = true;
+    } else {
+        bMouseOver = false;
+    }
+
 }
 
+//--------------------------------------------------------------
 void ofxInteractive::mousePressed(ofMouseEventArgs &args) {
     if(inside(args.x, args.y)) {
-        clicked = true;
+        bClicked = true;
         offsetx = x - args.x;
         offsety = y - args.y;
-        ofNotifyEvent(clickedEvent, args.button);
+        InteractionEventArgs interaction;
+        interaction.button = args.button;
+        interaction.id = getId();
+        ofNotifyEvent(clickedEvents, interaction);
     }
 }
 
+//--------------------------------------------------------------
 void ofxInteractive::mouseDragged(ofMouseEventArgs &args) {
-    if(clicked) {
+    if(bClicked) {
         setX(args.x+offsetx);
         setY(args.y+offsety);
     }
 }
 
+//--------------------------------------------------------------
 void ofxInteractive::mouseReleased(ofMouseEventArgs &args) {
-    clicked = false;
+    bClicked = false;
+}
+
+//--------------------------------------------------------------
+bool ofxInteractive::isMouseOver() {
+    return bMouseOver;
+}
+
+//--------------------------------------------------------------
+bool ofxInteractive::isClicked() {
+    return bClicked;
 }

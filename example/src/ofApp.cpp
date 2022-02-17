@@ -2,10 +2,18 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofTrueTypeFont myfont;
+    myfont.load("nofont",14);
 
-    button.set(100,100,50,30);
+    for(unsigned int i=0;i < 4;i++) {
+        buttons.emplace_back();
+        buttons.back().set(100+i*150,100,50,30);
+        buttons.back().setRoundedCorners(true);
+        buttons.back().setRollOverColour(ofColor(0,255,0));
+        buttons.back().setText("Button "+ofToString(i+1),myfont,ofColor(0));
+    }
 
-    ofAddListener(button.clickedEvent,this,&ofApp::buttonClicked);
+    ofAddListener(ofxInteractive::clickedEvents,this,&ofApp::buttonClicked);
 }
 
 //--------------------------------------------------------------
@@ -15,13 +23,15 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    button.draw();
+    for(unsigned int i=0;i < buttons.size();i++) {
+        buttons[i].draw();
+    }
 }
 
 //--------------------------------------------------------------
-void ofApp::buttonClicked(int & value)
+void ofApp::buttonClicked(InteractionEventArgs & args)
 {
-    ofLogNotice() << "Button clicked. Mouse button: " << value;
+    ofLogNotice() << "Button clicked on id = "<< args.id << ". Mouse button: " << args.button;
 }
 
 //--------------------------------------------------------------

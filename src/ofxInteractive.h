@@ -2,6 +2,15 @@
 
 #include "ofMain.h"
 
+
+class InteractionEventArgs : public ofEventArgs {
+
+public:
+
+    int id;
+    int button;
+};
+
 class ofxInteractive : public ofRectangle {
 public:
     ofxInteractive();
@@ -13,8 +22,19 @@ public:
     void mouseDragged(ofMouseEventArgs &args);
     void mouseReleased(ofMouseEventArgs &args);
 
-    bool clicked;
-    int offsetx, offsety;
+    bool isMouseOver();
+    bool isMouseDown() {return isClicked();}
+    bool isClicked();
+    int getId() {return id;}
 
-    ofEvent<int> clickedEvent;
+    bool bMouseOver;
+    bool bClicked;
+    int offsetx, offsety;
+    int id;
+
+    //static ofEvent<int> clickedEvents;
+    static ofEvent <InteractionEventArgs> clickedEvents;
+    static int maxId;
 };
+
+

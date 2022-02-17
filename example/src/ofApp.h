@@ -2,13 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxInteractive.h"
-
-class ofxButton: public ofxInteractive {
-public:
-    void draw() {
-        ofDrawRectRounded(position.x,position.y,0,width,height,5);
-    };
-};
+#include "ofxButton.h"
 
 class ofApp : public ofBaseApp{
 
@@ -29,7 +23,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-        void buttonClicked(int & value);
+        void buttonClicked(InteractionEventArgs & value);
 		
-        ofxButton button;
+        vector<ofxButton> buttons;
+        //ofxButton buttons;
 };
